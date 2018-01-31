@@ -35,7 +35,7 @@ storeRestaurantsInDB = (restaurants) => {
 
     var objectStore = transaction.objectStore(resObjectStoreName);
 
-    if (restaurants != undefined) {
+    if (restaurants) {
         restaurants.forEach(function (restaurant) {
             objectStore.put(restaurant);
         });
@@ -54,7 +54,7 @@ storeReviewsInDB = (reviews) => {
 
     var objectStore = transaction.objectStore(revObjectStoreName);
 
-    if (reviews != undefined) {
+    if (reviews) {
         reviews.forEach(function (review) {
             objectStore.put(review);
         });

@@ -162,7 +162,7 @@ class DBHelper {
      * Restaurant image URL.
      */
     static imageUrlForRestaurant(restaurant) {
-        let src = "/img/" + (restaurant.photograph === undefined ? "placeholder.png" : (restaurant.photograph + ".jpg"));
+        let src = "/img/" + (restaurant.photograph ? "placeholder.png" : (restaurant.photograph + ".jpg"));
         return (src);
     }
 
