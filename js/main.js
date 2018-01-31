@@ -114,6 +114,14 @@ updateRestaurants = () => {
             resetRestaurants(restaurants);
             fillRestaurantsHTML();
         }
+    });
+
+    DBHelper.fetchReviews((error, reviews) => {
+        if (error) { // Got an error!
+            console.error(error);
+        } else {
+            console.log("fetched, should be written soon");
+        }
     })
 };
 
