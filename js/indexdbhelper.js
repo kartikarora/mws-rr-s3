@@ -1,5 +1,6 @@
-let dbname = 'mwsrrs2',
-    objectStoreName = 'restaurants',
+let dbname = 'mwsrrs3',
+    resObjectStoreName = 'restaurants',
+    revObjectStoreName = 'reviews',
     indexeddbSupport;
 var db;
 
@@ -12,7 +13,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     openRequest.onupgradeneeded = function (event) {
         console.log("onupgradeneeded");
         db = event.target.result;
-        openRequest.result.createObjectStore(objectStoreName, {keyPath: "id"});
+        openRequest.result.createObjectStore(resObjectStoreName, {keyPath: "id"});
+        openRequest.result.createObjectStore(revObjectStoreName, {keyPath: "id"});
     };
 
     openRequest.onsuccess = function (event) {
@@ -27,11 +29,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
 }, false);
 
 
-storeInDB = (restaurants) => {
+storeRestaurantsInDB = (restaurants) => {
 
-    var transaction = db.transaction([objectStoreName], 'readwrite');
+    var transaction = db.transaction([resObjectStoreName], 'readwrite');
 
-    var objectStore = transaction.objectStore(objectStoreName);
+    var objectStore = transaction.objectStore(resObjectStoreName);
 
     if (restaurants != undefined) {
         restaurants.forEach(function (restaurant) {
@@ -39,18 +41,37 @@ storeInDB = (restaurants) => {
         });
     }
     transaction.oncomplete = function () {
-        console.info("Write complete");
+        console.info("Restaurant write complete");
     };
     transaction.onerror = function (event) {
         console.error(event);
     };
 };
 
-fetchFromDb = () => {
+storeReviewsInDB = (reviews) => {
+
+    var transaction = db.transaction([revObjectStoreName], 'readwrite');
+
+    var objectStore = transaction.objectStore(revObjectStoreName);
+
+    if (reviews != undefined) {
+        reviews.forEach(function (review) {
+            objectStore.put(review);
+        });
+    }
+    transaction.oncomplete = function () {
+        console.info("Review write complete");
+    };
+    transaction.onerror = function (event) {
+        console.error(event);
+    };
+};
+
+fetchRestaurantFromDb = () => {
 
     var data;
-    var transaction = db.transaction([objectStoreName], "readonly");
-    var objectStore = transaction.objectStore(objectStoreName);
+    var transaction = db.transaction([resObjectStoreName], "readonly");
+    var objectStore = transaction.objectStore(resObjectStoreName);
     data = [];
     var cursorr = objectStore.openCursor();
     cursorr.onsuccess = function (event) {
@@ -66,10 +87,10 @@ fetchFromDb = () => {
     return data;
 };
 
-fetchFromDbById = (id) => {
+fetchRestaurantFromDbById = (id) => {
 
-    var transaction = db.transaction([objectStoreName], "readonly");
-    var objectStore = transaction.objectStore(objectStoreName);
+    var transaction = db.transaction([resObjectStoreName], "readonly");
+    var objectStore = transaction.objectStore(resObjectStoreName);
 
     let data = objectStore.get(Number(id));
 
@@ -81,4 +102,44 @@ fetchFromDbById = (id) => {
     data.onerror = function (e) {
         console.log(e);
     }
+};
+
+fetchReviewFromDb = () => {
+
+    var data;
+    var transaction = db.transaction([resObjectStoreName, revObjectStoreName], "readonly");
+    var objectStore = transaction.objectStore(revObjectStoreName);
+    data = [];
+    var cursorr = objectStore.openCursor();
+    cursorr.onsuccess = function (event) {
+        let cursor = event.target.result;
+        if (cursor) {
+            data.push(cursor.value);
+            cursor.continue();
+        }
+    };
+    cursorr.onerror = function (event) {
+        console.log(event);
+    };
+    return data;
+};
+
+fetchReviewByRestaurantIdFromDb = (id) => {
+
+    var data;
+    var transaction = db.transaction([revObjectStoreName], "readonly");
+    var objectStore = transaction.objectStore(revObjectStoreName);
+    data = [];
+    var cursorr = objectStore.openCursor();
+    cursorr.onsuccess = function (event) {
+        let cursor = event.target.result;
+        if (cursor) {
+            data.push(cursor.value);
+            cursor.continue();
+        }
+    };
+    cursorr.onerror = function (event) {
+        console.log(event);
+    };
+    return data;
 };

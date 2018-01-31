@@ -1,4 +1,4 @@
-let restaurant;
+let restaurant, reviews;
 var map;
 
 /**
@@ -40,7 +40,16 @@ fetchRestaurantFromURL = (callback) => {
                 return;
             }
             fillRestaurantHTML();
-            callback(null, restaurant)
+            callback(null, restaurant);
+        });
+
+        DBHelper.fetchReviewsByRestaurantId(id, (error, reviews) => {
+            self.reviews = reviews;
+            if (!reviews) {
+                console.error(error);
+                return;
+            }
+            fillReviewsHTML();
         });
     }
 };
@@ -67,8 +76,6 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     if (restaurant.operating_hours) {
         fillRestaurantHoursHTML();
     }
-    // fill reviews
-    fillReviewsHTML();
 };
 
 /**
@@ -96,7 +103,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews = self.reviews) => {
     const container = document.getElementById('reviews-container');
     const title = document.createElement('h3');
     title.innerHTML = 'Reviews';
@@ -125,9 +132,11 @@ createReviewHTML = (review) => {
     name.tabIndex = 5;
     li.appendChild(name);
 
-    const date = document.createElement('h5');
-    date.innerHTML = review.date;
-    li.appendChild(date);
+    if (review.date) {
+        const date = document.createElement('h5');
+        date.innerHTML = review.date;
+        li.appendChild(date);
+    }
 
     const rating = document.createElement('h5');
     rating.innerHTML = `Rating: ${review.rating}`;
