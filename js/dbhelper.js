@@ -162,7 +162,7 @@ class DBHelper {
      * Restaurant image URL.
      */
     static imageUrlForRestaurant(restaurant) {
-        let src = "/img/" + (restaurant.photograph ? "placeholder.png" : (restaurant.photograph + ".jpg"));
+        let src = "/img/" + (restaurant.photograph ? restaurant.photograph : "placeholder") + (Modernizr.webp ? ".webp" : ".png");
         return (src);
     }
 
@@ -191,12 +191,12 @@ class DBHelper {
             if (xhr.status === 200 || xhr.status === 201) { // Got a success response from server!
                 const json = JSON.parse(xhr.responseText);
                 allReviews = json;
-                callback(null, json);
+                callback(null);
             } else { // Oops!. Got an error from server.
                 const error = (`Request failed. Returned status of ${xhr.status}`);
                 // callback(error, null);
                 const json = fetchReviewFromDb();
-                callback(null, json);
+                callback(null);
             }
         };
         xhr.send();

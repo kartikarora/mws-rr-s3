@@ -116,11 +116,11 @@ updateRestaurants = () => {
         }
     });
 
-    DBHelper.fetchReviews((error, reviews) => {
+    DBHelper.fetchReviews((error) => {
         if (error) { // Got an error!
             console.error(error);
         } else {
-            console.log("fetched, should be written soon");
+            console.log("Reviews fetched. Will be written soon");
         }
     })
 };
