@@ -182,6 +182,14 @@ createRestaurantHTML = (restaurant) => {
     more.tabIndex = 0;
     li.append(more);
 
+    var isFav = restaurant.is_favorite == 'true';
+    const i = document.createElement('i');
+    i.className = "material-icons";
+    i.innerText = isFav ? "favorite" : "favorite_border";
+    i.setAttribute('data-resid', restaurant.id);
+    i.onclick = isFav ? removeFromFav : addToFav;
+    li.append(i);
+
     return li
 };
 
@@ -196,5 +204,22 @@ addMarkersToMap = (restaurants = self.restaurants) => {
             window.location.href = marker.url
         });
         self.markers.push(marker);
+    });
+};
+
+
+addToFav = (event) => {
+    var id = event.target.dataset.resid;
+    DBHelper.updateFavouriteARestaurant(id, true, (error, res) => {
+        event.target.innerText = "favorite";
+        event.target.onclick = removeFromFav;
+    });
+};
+
+removeFromFav = (event) => {
+    var id = event.target.dataset.resid;
+    DBHelper.updateFavouriteARestaurant(id, false, (error, res) => {
+        event.target.innerText = "favorite_border";
+        event.target.onclick = addToFav;
     });
 };

@@ -1,6 +1,7 @@
 let dbname = 'mwsrrs3',
     resObjectStoreName = 'restaurants',
     revObjectStoreName = 'reviews',
+    favObjectStoreName = 'favourites',
     indexeddbSupport;
 var db;
 
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         db = event.target.result;
         openRequest.result.createObjectStore(resObjectStoreName, {keyPath: "id"});
         openRequest.result.createObjectStore(revObjectStoreName, {keyPath: "id"});
+        openRequest.result.createObjectStore(favObjectStoreName, {keyPath: "id"});
     };
 
     openRequest.onsuccess = function (event) {
@@ -142,4 +144,20 @@ fetchReviewByRestaurantIdFromDb = (id) => {
         console.log(event);
     };
     return data;
+};
+
+checkInFavourite = (id) => {
+    var transaction = db.transaction([favObjectStoreName], "readonly");
+    var objectStore = transaction.objectStore(favObjectStoreName);
+    var data = [];
+    var cursorr = objectStore.openCursor();
+    cursorr.onsuccess = function (event) {
+        let cursor = event.target.result;
+        if (cursor) {
+            data.push(cursor.value);
+            cursor.continue();
+        } else {
+            return !data.indexOf({id: id.toString()}) == -1;
+        }
+    };
 };

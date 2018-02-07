@@ -222,4 +222,23 @@ class DBHelper {
         xhr.send();
     }
 
+    /**
+     * Favourite a restaurant
+     */
+
+    static updateFavouriteARestaurant(id, favourite, callback) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('PUT', DBHelper.DATABASE_URL + "/restaurants/" + id + "/?is_favorite=" + favourite);
+        xhr.onload = () => {
+            if (xhr.status === 200 || xhr.status === 201) { // Got a success response from server!
+                const json = JSON.parse(xhr.responseText);
+                callback(null, json);
+            } else { // Oops!. Got an error from server.
+                const error = (`Request failed. Returned status of ${xhr.status}`);
+                callback(error, null);
+            }
+        };
+        xhr.send();
+    }
+
 }
